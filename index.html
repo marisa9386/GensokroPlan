@@ -138,7 +138,8 @@
                 onSimulateCallClick(mainContractAddress, "getChars", args, function (e) {
                     var result = JSON.parse(e.result);
                     var courseListHTML = $.course.buildCourseList(result.List);
-					$('#container').pinto();
+					//$.course.refreshPito();
+					setTimeout(function(){$('#container').pinto()},10);
                   }
                 );
 
