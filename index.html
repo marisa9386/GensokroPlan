@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="幻想乡计划">
+    <meta name="author" content="#">
+	<link rel="icon" href="favicon.ico" />
+    <title>星云幻想乡计划</title>
+	
+	
+	<link rel="stylesheet" href="css/menu.css">
+	
+	<!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+	
+	<!-- Custom Fonts -->
+    <link rel="stylesheet" href="font-awesome-4.4.0/css/font-awesome.min.css"  type="text/css">
+	
+	<link rel="stylesheet" href="css/lightbox.css">
+	
+	<!-- Core JavaScript Files -->  	 
+    
+	
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+	<div class="header">
+		<div id='cssmenu' >
+			<ul>
+			   <li class="active"><a href='index.html'><span>首页</span></a></li>
+               <li class='last'><a href='commit.html'><span>发布</span></a></li>
+			   <li><a href='about.html'><span>关于</span></a></li>
+			   
+			</ul>
+		</div>
+	</div>
+	<div id="page-content" class="index-page">
+		<div id="container">
+			<!-- These are our grid blocks -->
+		</div>
+	</div>
+
+    <!-- Once the page is loaded, initialized the plugin. -->
+    <script type="text/javascript" src="js/jquery-2.1.1.js" ></script>
+	
+	<!-- jQuery Pinterest -->
+    <script type="text/javascript" src="js/jquery.pinto.js"></script>
+	
+   <script type="text/javascript" src="js/main.js"></script>
+	
+
+	
+	<!-- Menu -->
+	<script src="js/script.js"></script>
+	<script src="js/nebPay.js"></script>
+    <script src="js/nebulas.js"></script>
+    <script src="js/gensokyoapi.js"></script>
+	<script type="text/javascript">
+	(function ($) {
+        var param = {
+            rows: 40,
+            page: 1,
+            sidx: "updateTime",
+            sord: "desc",
+            records:0,
+            searchName:"",
+        };
+        $.course = {
+            requestParam: param,
+            setSearchType: function (liarType, t) {
+                $.course.requestParam.liarType = liarType;
+                $.course.requestParam.page = 1;
+                $.course.init();
+            },
+            setpage: function (pagecount, t) {
+                $.course.requestParam.page = pagecount;
+                $.course.init();
+            },
+            buildCourseList: function (data) {
+
+                var $gameArea = $('#container');
+               // $gameArea.empty();
+                if (data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        var item = data[i];
+
+                        var updateTime = timeStamp2String(item.updateTime);
+                        var chardesc = item.desc;
+
+						if (item.picUrl != "")
+						{
+							$gameArea.append('<div class="item">\
+								<a class="example-image-link" href="' + (item.picUrl || '') + '" data-lightbox="example-set" data-title="点击图片左右两侧来切换图片.">\
+								<img class="example-image" src="' + (item.picUrl || '') + '" alt=""/></a>\
+								<div class="content-item">\
+									<h3 class="title-item"><a href="single.html?id=' + item.id + '">' + (item.charName || '') + '</a></h3>\
+									<div class="time">' + (updateTime || '') + '</div>\
+									<p class="info">' + (chardesc || '') + '</p>\
+								</div>\
+								<div class="bottom-item">\
+									<a href="#" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>\
+									<a href="#" class="btn btn-like"><i class="fa fa-heart"></i><span>' + item.likes + '</span></a>\
+									<a href="single.html?id=' + item.id + '" class="btn btn-more"><i class="fa fa-long-arrow-right "></i></a>\
+								</div>\
+							</div>');
+						}
+						else {
+						$gameArea.append('<div class="item">\
+								<div class="content-item">\
+									<h3 class="title-item"><a href="single.html?id=' + item.id + '">' + (item.charName || '') + '</a></h3>\
+									<div class="time">' + (updateTime || '') + '</div>\
+									<p class="info">' + (chardesc || '') + '</p>\
+								</div>\
+								<div class="bottom-item">\
+									<a href="#" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>\
+									<a href="#" class="btn btn-like"><i class="fa fa-heart"></i><span>' + item.likes + '</span></a>\
+									<a href="single.html?id=' + item.id + '" class="btn btn-more"><i class="fa fa-long-arrow-right "></i></a>\
+								</div>\
+							</div>');
+						}
+
+                    }//(gameDesc || '')
+                } else {
+                    $gameArea.append('抱歉，暂无相关信息！');
+                }			
+            },
+            init: function () {
+                var args = JSON.stringify([$.course.requestParam]);
+
+                onSimulateCallClick(mainContractAddress, "getChars", args, function (e) {
+                    var result = JSON.parse(e.result);
+                    var courseListHTML = $.course.buildCourseList(result.List);
+					$('#container').pinto();
+                  }
+                );
+
+            }
+        };
+        $(function () {
+            $.course.init();
+			$("#test111").click(function(){
+			  $.course.init();
+			});
+        });
+    })(jQuery);
+	
+	
+	
+	
+	
+	function copyUrl(){
+ var url = document.getElementById("url").value;
+ window.clipboardData.setData("Text",url);
+ alert("复制链接成功！");
+}
+	
+	
+	
+	
+	</script>
+		<!-- Light Box -->
+	<script src="js/lightbox-plus-jquery.min.js"></script>
+</body>
+</html>

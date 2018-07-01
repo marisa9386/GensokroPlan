@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Free Bootstrap Themes by Html5xCss3 dot com - Free Responsive Html5 Templates">
+    <meta name="author" content="#">
+	<link rel="icon" href="favicon.ico" />
+    <title>星云幻想乡计划</title>
+	
+	<!-- SmartMenus jQuery Bootstrap Addon CSS -->
+    <link href="css/menu.css" rel="stylesheet">
+	
+	<!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+	
+	<!-- Custom Fonts -->
+    <link rel="stylesheet" href="font-awesome-4.4.0/css/font-awesome.min.css"  type="text/css">
+	
+	<link rel="stylesheet" href="css/lightbox.css">
+	
+	
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv.js"></script>
+        <script src="js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+	<div class="header">
+		<div id='cssmenu' >
+			<ul>
+			   <li class="last"><a href='index.html'><span>首页</span></a></li>
+               <li class="last"><a href='commit.html'><span>发布</span></a></li>
+			   <li class="last"><a href='about.html'><span>关于</span></a></li>
+			</ul>
+		</div>
+	</div>
+	
+    <div id="page-content" class="sub-page">
+		<div class="container" id="articleDiv">
+			<center><article>
+			    <div id="divPicUrl" style="text-align:center;">
+				</div>
+				<div class="content-item">
+					<h3 class="title-item" id="charName"></h3>
+					<h3 class="title-item" style="text-align:right;" id="fromName"></h3>
+					<div class="time" id="updateTime"></div>
+					<ul class="list-inline">
+					</ul>
+					<p class="info" id="infoDesc"></p>
+				</div>
+				<div class="bottom-item">
+					<a href="#" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>
+					<a href="javascript:void(0);" onclick="addLike();" class="btn btn-like"><i class="fa fa-heart" id="likei"></i><span id="infoLikes"></span></a>					
+					<a href="#" class="btn btn-share share" id="editUrl" style="display:none;"><i class="fa fa-pencil"></i><span>编辑</span></a>
+					<span class="user f-right" id="infoCreator"></span>
+					<input type="text" id="inputVote" style="display:none" />
+				</div>
+			</article></center>
+		</div>
+	</div>
+	
+    <!-- Once the page is loaded, initialized the plugin. -->
+    <script type="text/javascript" src="js/jquery-2.1.1.js" ></script>
+	<script src="js/bootstrap.min.js"></script>
+
+    <!-- SmartMenus jQuery Bootstrap Addon -->
+    <script type="text/javascript" src="js/jquery.smartmenus.bootstrap.js"></script>
+	
+	<script src="js/lightbox-plus-jquery.min.js"></script>
+	
+	<!-- Menu -->
+	<script src="js/script.js"></script>
+	
+	    <script src="js/layer-v3.1.1/layer/layer.js"></script>
+    <script src="js/mypage.js"></script>
+    <script src="js/mypage.min.js"></script>
+    <script src="js/nebPay.js"></script>
+    <script src="js/nebulas.js"></script>
+    <script src="js/gensokyoapi.js"></script>
+	
+	 <!-- js for nebulas -->
+    <script type="text/javascript">
+
+        var InfoId = getQueryString("id");
+
+
+
+        var uploadComment = function () {
+            var comment = $("#commentContent").val();
+
+            var param = {cid:InfoId,content:comment};
+            var args = JSON.stringify([param]);
+
+            newTransaction(mainContractAddress, 0, "addCommentInfo", args, function(t) {
+                if("Error: Transaction rejected by user" == t) {
+                    layer.alert("已取消", function (index) {
+                        layer.close(index);
+                    });
+
+                } else {
+                    layer.alert("提交完毕，请等待交易完成", function (index) {
+                        layer.close(index);
+                        //window.location.href = 'LiarPage.html';
+                        $("#commentModal").modal('hide');
+                        $.course.init();
+                    });
+
+                }
+
+
+
+            });
+
+        }
+
+
+        var loadInfoDetail = function () {
+            var args = JSON.stringify([InfoId]);
+            onSimulateCallClick(mainContractAddress, "getCharInfo", args, function (e) {
+                var item = JSON.parse(e.result);
+                if (item.charName) {
+                    loadInfo("charName", item.charName);
+                    loadInfo("fromName", "——"+item.fromName);
+                    loadInfo("updateTime", timeStamp2String(item.updateTime));
+					loadInfo("infoCreator", "Posted by " + item.creator);
+					loadInfo("infoLikes", item.likes);			
+                     
+                    if (item.isOwner == 1)
+                    {
+                        $("#editUrl").attr("href","commit.html?id=" + InfoId ); 
+					    $("#editUrl").show();
+                    }
+					var isVote = item.vote;
+					$("#inputVote").val(isVote);
+					if (isVote == 0 )
+                    {
+					    $("#likei").attr("class","fa fa-heart-o"); 					
+					}
+                    if (item.picUrl != '')
+                    {
+                        var picurlHtml = '<a class="example-image-link" href="' + item.picUrl +'" data-lightbox="example-set" data-title=""><img class="example-image" src="' + item.picUrl +'" alt=""/></a>';
+                        loadInfoHtml("divPicUrl", picurlHtml);
+                    }
+                     //divPicUrl
+                    loadInfoHtml("infoDesc", item.desc.replace(/\r\n/g, "<br>").replace(/\n/g, "</br>"));
+
+                    
+                } else {
+
+                }
+
+            });
+
+        };
+
+		function addLike() {
+		    var isVote = $("#inputVote").val();
+		    if(isVote == 1) {
+			    layer.alert("您已经点过赞啦！", function (index) {
+							layer.close(index);
+						});
+			} 
+			else {
+				var param = { id: InfoId, like: 1, dislike: 0};
+				var args = JSON.stringify([param]);
+				newTransaction(mainContractAddress, 0, "addlike", args, function (t) {
+
+					if ("Error: Transaction rejected by user" == t) {
+						layer.alert("已取消", function (index) {
+							layer.close(index);
+						});
+					} else {
+
+						layer.alert("发送中，请等待交易成功", function (index) {
+							layer.close(index);
+							window.location.href = 'single.html?id=' + InfoId;
+						});
+					}
+				});
+			}
+		    
+		
+		
+		}
+		
+        function loadInfo(id, content) {
+            if (id == "" || id == null || id == "undefined") {
+                return;
+            }
+            else {
+                if (content != null && content != "null") {
+                    $("#" + id).text(content);
+                }
+                else {
+                    $("#" + id).text('');
+                }
+            }
+        }
+
+        function loadInfoUrl(id, content) {
+            if (id == "" || id == null || id == "undefined") {
+                return;
+            }
+            else {
+                if (content != null && content != "null") {
+                    var url = "<a target='_blank' href='http://" + content.replace("http://","") + "'>"+content+"</a>";
+                    $("#" + id).html(url);
+                }
+                else {
+                    $("#" + id).html('');
+                }
+            }
+        }
+
+        function loadInfoHtml(id, content) {
+            if (id == "" || id == null || id == "undefined") {
+                return;
+            }
+            else {
+                if (content != null && content != "null") {
+                    $("#" + id).html(content);
+                }
+                else {
+                    $("#" + id).html('');
+                }
+            }
+        }
+
+        (function ($) {
+            var param = {rows:10,page:1,sidx:"creTime",sord:"desc",title:"",records:0,id:InfoId};
+            $.course = {
+                requestParam: param,
+                setpage: function (pagecount, t) {
+                    $.course.requestParam.page = pagecount;
+
+                    $(t).parent().parent().children().removeClass('categoryActive');
+                    $(t).parent().addClass('categoryActive');
+
+                    $.course.init();
+                },
+                buildCourseList: function (data) {
+
+                    var $gameArea = $('#commentList');
+                    $gameArea.empty();
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            var item = data[i];
+
+                            var creTime = timeStamp2String(item.creTime);
+
+
+                            $gameArea.append('<div class="commentDiv" >\
+                                        <div class="commentDiv2" >\
+                                            <span class="post_meta_top" style="float: left;">\
+                                                ' + item.author + ' - ' + creTime +'\
+                                            </span>\
+                                        </div>\
+                                        <div class="height8"></div>\
+                                        <p class="post_content">' + item.content + '</p>\
+                                        <div class="height30"></div>\
+                                    </div>');
+                        }
+                    } else {
+                        $gameArea.append('暂无相关评论！');
+                    }
+                },
+                init: function () {
+
+                    var args = JSON.stringify([$.course.requestParam]);
+
+                    onSimulateCallClick(mainContractAddress, "getLiarComments", args, function (e) {
+                        var result = JSON.parse(e.result);
+                        $('#page6').html("");
+                        MyPage(result.Page);
+                        var courseListHTML = $.course.buildCourseList(result.List);
+                    }
+                    );
+
+                }
+            };
+
+            $(function () {
+                loadInfoDetail();
+				//先不做评论功能
+               // $.course.init();
+            });
+
+        })(jQuery);
+
+        function MyPage(Page) {
+            $.mypage("page6", Page.page, Page.total, function (page) {
+                $.course.setpage(page, this);
+                updatePage(page);
+            });
+        }
+        function updatePage(now) {
+            $.mypage("page6", now, Page.total, function (page) {
+                $.course.setpage(page, this);
+                updatePage(page);
+            });
+        }
+
+
+        var editInfo = function () { 
+            window.location.href = 'commit.html?id=' + InfoId;
+        };
+
+    </script>
+    <!-- /js for nebulas -->
+	
+	
+	
+	
+</body>
+</html>
