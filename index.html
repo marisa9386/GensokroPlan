@@ -38,7 +38,6 @@
 			   <li class="active"><a href='index.html'><span>首页</span></a></li>
                <li class='last'><a href='commit.html'><span>发布</span></a></li>
 			   <li><a href='about.html'><span>关于</span></a></li>
-			   
 			</ul>
 		</div>
 	</div>
@@ -46,6 +45,7 @@
 		<div id="container">
 			<!-- These are our grid blocks -->
 		</div>
+		<input id="copyurlvalue" type="text" style="position:absolute;top:-4150px;" value="" />
 	</div>
 
     <!-- Once the page is loaded, initialized the plugin. -->
@@ -60,6 +60,7 @@
 	
 	<!-- Menu -->
 	<script src="js/script.js"></script>
+	<script src="js/layer-v3.1.1/layer/layer.js"></script>
 	<script src="js/nebPay.js"></script>
     <script src="js/nebulas.js"></script>
     <script src="js/gensokyoapi.js"></script>
@@ -106,7 +107,7 @@
 									<p class="info">' + (chardesc || '') + '</p>\
 								</div>\
 								<div class="bottom-item">\
-									<a href="#" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>\
+									<a href="javascript:void(0);" onclick="copyUrl(' + item.id + ');" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>\
 									<a href="#" class="btn btn-like"><i class="fa fa-heart"></i><span>' + item.likes + '</span></a>\
 									<a href="single.html?id=' + item.id + '" class="btn btn-more"><i class="fa fa-long-arrow-right "></i></a>\
 								</div>\
@@ -120,7 +121,7 @@
 									<p class="info">' + (chardesc || '') + '</p>\
 								</div>\
 								<div class="bottom-item">\
-									<a href="#" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>\
+									<a href="javascript:void(0);" onclick="copyUrl(' + item.id + ');" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>\
 									<a href="#" class="btn btn-like"><i class="fa fa-heart"></i><span>' + item.likes + '</span></a>\
 									<a href="single.html?id=' + item.id + '" class="btn btn-more"><i class="fa fa-long-arrow-right "></i></a>\
 								</div>\
@@ -139,7 +140,8 @@
                     var result = JSON.parse(e.result);
                     var courseListHTML = $.course.buildCourseList(result.List);
 					//$.course.refreshPito();
-					setTimeout(function(){$('#container').pinto()},10);
+					$('#container').pinto();
+					setTimeout(function(){$('#container').pinto()},1000);
                   }
                 );
 
@@ -147,25 +149,29 @@
         };
         $(function () {
             $.course.init();
-			$("#test111").click(function(){
-			  $.course.init();
-			});
         });
     })(jQuery);
 	
 	
 	
-	
-	
-	function copyUrl(){
- var url = document.getElementById("url").value;
- window.clipboardData.setData("Text",url);
- alert("复制链接成功！");
-}
-	
-	
-	
-	
+	function copyUrl(id) {
+               var url = "https://marisa9386.github.io/GensokroPlan/single.html?id=" + id;
+			   var urlvalue = $("#copyurlvalue");
+			   urlvalue.val(url);
+                if (document.execCommand) {
+                    urlvalue.select(); // 选择对象
+                    document.execCommand("Copy");
+                }
+
+                if (window.clipboardData) {
+                    window.clipboardData.setData("Text", urlvalue.val());
+                }
+                layer.alert("链接已复制到剪贴板！", function (index) {
+                        layer.close(index);
+                    });
+            }
+
+
 	</script>
 		<!-- Light Box -->
 	<script src="js/lightbox-plus-jquery.min.js"></script>

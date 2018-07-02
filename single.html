@@ -54,11 +54,12 @@
 					<p class="info" id="infoDesc"></p>
 				</div>
 				<div class="bottom-item">
-					<a href="#" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>
+					<a href="javascript:void(0);" onclick="copyUrl();" class="btn btn-share share"><i class="fa fa-share-alt"></i><span>分享</span></a>
 					<a href="javascript:void(0);" onclick="addLike();" class="btn btn-like"><i class="fa fa-heart" id="likei"></i><span id="infoLikes"></span></a>					
 					<a href="#" class="btn btn-share share" id="editUrl" style="display:none;"><i class="fa fa-pencil"></i><span>编辑</span></a>
 					<span class="user f-right" id="infoCreator"></span>
 					<input type="text" id="inputVote" style="display:none" />
+					<input id="copyurlvalue" type="text" style="position:absolute;top:-4150px;" value="" />
 				</div>
 			</article></center>
 		</div>
@@ -310,6 +311,22 @@
             window.location.href = 'commit.html?id=' + InfoId;
         };
 
+		function copyUrl() {
+               var url = "https://marisa9386.github.io/GensokroPlan/single.html?id=" + InfoId;
+			   var urlvalue = $("#copyurlvalue");
+			   urlvalue.val(url);
+                if (document.execCommand) {
+                    urlvalue.select(); // 选择对象
+                    document.execCommand("Copy");
+                }
+
+                if (window.clipboardData) {
+                    window.clipboardData.setData("Text", urlvalue.val());
+                }
+                layer.alert("链接已复制到剪贴板！", function (index) {
+                        layer.close(index);
+                    });
+            }
     </script>
     <!-- /js for nebulas -->
 	
